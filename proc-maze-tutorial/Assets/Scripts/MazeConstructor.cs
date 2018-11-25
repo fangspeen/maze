@@ -7,6 +7,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class MazeConstructor : MonoBehaviour
 {
@@ -174,13 +175,18 @@ public class MazeConstructor : MonoBehaviour
 
     private void PlaceGoalTrigger(TriggerEventHandler callback)
     {
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        go.transform.position = new Vector3(goalCol * hallWidth, .5f, goalRow * hallWidth);
+        var gameObjects = Resources.FindObjectsOfTypeAll(typeof(GameObject));
+        GameObject open_chest = (GameObject)gameObjects.SingleOrDefault(o => o.name == "chest_open");
+        //GameObject coins = (GameObject)gameObjects.SingleOrDefault(o => o.name == "coins");
+        //GameObject open_chest = (GameObject)Resources.Load("ChestFree/chest_open", typeof(GameObject));
+        GameObject go = (GameObject)Instantiate(open_chest, new Vector3(goalCol * hallWidth, .5f, goalRow * hallWidth), new Quaternion(0,0,0,0));
+
+        //go.AddComponent<Component>();
+
         go.name = "Treasure";
         go.tag = "Generated";
 
         go.GetComponent<BoxCollider>().isTrigger = true;
-        go.GetComponent<MeshRenderer>().sharedMaterial = treasureMat;
 
         TriggerEventRouter tc = go.AddComponent<TriggerEventRouter>();
         tc.callback = callback;
@@ -217,7 +223,6 @@ public class MazeConstructor : MonoBehaviour
             msg += "\n";
         }
 
-        Debug.Log(msg);
         GUI.Label(new Rect(20, 20, 500, 500), msg);
     }
 }
